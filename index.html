@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPDB LT-A Electricity Cost Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2a4d69);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        header {
+            background: #0a3d62;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 25px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffd700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .tariff-info {
+            background: #e1f5fe;
+            padding: 15px;
+            font-size: 1rem;
+            text-align: center;
+            border-bottom: 2px dashed #4fc3f7;
+            font-weight: 500;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        .calculator {
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .calculator {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            animation: slideInLeft 0.7s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .result-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            animation: slideInRight 0.7s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #0a3d62;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            border-color: #4fc3f7;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.3);
+        }
+        
+        .charge-group {
+            margin: 25px 0;
+        }
+        
+        .charge-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid #eaeaea;
+            transition: all 0.3s;
+        }
+        
+        .charge-item:hover {
+            background-color: #e8f4fc;
+            transform: translateX(5px);
+            border-radius: 8px;
+            padding: 14px 10px;
+        }
+        
+        .charge-item:last-child {
+            border-bottom: none;
+        }
+        
+        .charge-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .charge-value {
+            width: 100px;
+            padding: 10px;
+            text-align: right;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .charge-value:focus {
+            border-color: #4fc3f7;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.3);
+        }
+        
+        .charge-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+        
+        .charge-label i {
+            color: #0a3d62;
+            font-size: 18px;
+        }
+        
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #2196F3;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        button {
+            background: linear-gradient(to right, #0a3d62, #1a5276);
+            color: white;
+            border: none;
+            padding: 16px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        button:hover {
+            background: linear-gradient(to right, #1a5276, #2471a3);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, #6c757d, #5a6268);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(to right, #5a6268, #495057);
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, #28a745, #218838);
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(to right, #218838, #1e7e34);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(to right, #dc3545, #c82333);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(to right, #c82333, #bd2130);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-group button {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+        }
+        
+        .results {
+            background: #e8f4fc;
+            border-radius: 10px;
+            padding: 20px;
+            display: none;
+            border-left: 5px solid #0a3d62;
+        }
+        
+        .results.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .results h2 {
+            color: #0a3d62;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #b3e5fc;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px dashed #b3e5fc;
+            animation: slideIn 0.4s ease-out;
+            animation-fill-mode: backwards;
+        }
+        
+        .result-item:nth-child(1) { animation-delay: 0.1s; }
+        .result-item:nth-child(2) { animation-delay: 0.2s; }
+        .result-item:nth-child(3) { animation-delay: 0.3s; }
+        .result-item:nth-child(4) { animation-delay: 0.4s; }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #0a3d62;
+        }
+        
+        .value {
+            font-weight: bold;
+            color: #e74c3c;
+            font-size: 18px;
+        }
+        
+        .breakdown {
+            margin-top: 25px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        .breakdown h3 {
+            color: #0a3d62;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #555;
+        }
+        
+        .breakdown-value {
+            font-weight: 600;
+        }
+        
+        .slab-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .slab-table th {
+            background: #0a3d62;
+            color: white;
+            padding: 14px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .slab-table td {
+            padding: 14px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .slab-table tr:nth-child(even) {
+            background-color: #f5f9ff;
+        }
+        
+        .slab-table tr:hover {
+            background-color: #e1f5fe;
+            transition: background-color 0.3s;
+        }
+        
+        .slab-table .slab-rate {
+            font-weight: 700;
+            color: #0a3d62;
+        }
+        
+        .highlight {
+            background: #fff8e1 !important;
+            font-weight: 700;
+        }
+        
+        .disclaimer {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .disclaimer i {
+            color: #ffc107;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .language-toggle {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 30px;
+            display: flex;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .language-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .language-toggle span {
+            padding: 5px 10px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        .language-toggle span.active {
+            background: white;
+            color: #0a3d62;
+            font-weight: 600;
+        }
+        
+        .social-sharing {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .social-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .social-btn:hover {
+            transform: translateY(-5px);
+        }
+        
+        .facebook { background: #3b5998; }
+        .twitter { background: #1da1f2; }
+        .whatsapp { background: #25d366; }
+        .email { background: #d44638; }
+        .print { background: #6c757d; }
+        
+        .edit-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .edit-controls button {
+            margin-top: 0;
+        }
+        
+        .slab-edit-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .slab-edit-row input {
+            flex: 1;
+            padding: 10px;
+        }
+        
+        .remove-slab {
+            background: #dc3545;
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .remove-slab:hover {
+            transform: scale(1.1);
+        }
+        
+        .add-slab-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .add-slab-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .slab-editor {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .slab-editor.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>BPDB</span>
+            </div>
+            <div class="language-toggle" id="languageToggle">
+                <span class="active" data-lang="en">EN</span>
+                <span data-lang="bn">BN</span>
+            </div>
+            <h1>
+                <i class="fas fa-calculator"></i>
+                LT-A Electricity Cost Calculator
+            </h1>
+            <p>Official Tariff as of February 2024</p>
+        </header>
+        
+        <div class="tariff-info">
+            <i class="fas fa-info-circle"></i>
+            Calculate your electricity bill with customizable charges
+        </div>
+        
+        <div class="calculator">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="units">
+                        <i class="fas fa-bolt"></i>
+                        Enter total units consumed (kWh):
+                    </label>
+                    <input type="number" id="units" min="0" step="0.01" placeholder="e.g., 325" value="325">
+                </div>
+                
+                <div class="input-group">
+                    <label for="days">
+                        <i class="fas fa-calendar-alt"></i>
+                        Enter number of days in billing period:
+                    </label>
+                    <input type="number" id="days" min="1" value="30" placeholder="e.g., 30">
+                </div>
+                
+                <div class="charge-group">
+                    <h3 style="color: #0a3d62; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-cog"></i>
+                        Customize Additional Charges
+                    </h3>
+                    
+                    <div class="charge-item">
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="includeVAT" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="charge-label">
+                                <i class="fas fa-percentage"></i>
+                                VAT (%)
+                            </div>
+                        </div>
+                        <div class="charge-control">
+                            <input type="number" id="vatValue" class="charge-value" value="5" min="0" max="100" step="0.1">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="charge-item">
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="includeRebate">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="charge-label">
+                                <i class="fas fa-tag"></i>
+                                Rebate (%)
+                            </div>
+                        </div>
+                        <div class="charge-control">
+                            <input type="number" id="rebateValue" class="charge-value" value="2" min="0" max="100" step="0.1">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="charge-item">
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="includeMeterRent" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="charge-label">
+                                <i class="fas fa-home"></i>
+                                Meter Rent (Tk)
+                            </div>
+                        </div>
+                        <div class="charge-control">
+                            <input type="number" id="meterRentValue" class="charge-value" value="40" min="0" step="1">
+                            <span>Tk</span>
+                        </div>
+                    </div>
+                    
+                    <div class="charge-item">
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="includeDemandCharge" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="charge-label">
+                                <i class="fas fa-plug"></i>
+                                Demand Charge (Tk)
+                            </div>
+                        </div>
+                        <div class="charge-control">
+                            <input type="number" id="demandChargeValue" class="charge-value" value="84" min="0" step="1">
+                            <span>Tk</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="calculateCost()">
+                    <i class="fas fa-calculator"></i>
+                    Calculate Electricity Cost
+                </button>
+                
+                <div class="disclaimer">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Note:</strong> This calculator is designed for BPDB Residential Prepaid Meter consumers only. 
+                    Rates are based on the official February 2024 tariff structure.
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <div class="results" id="results">
+                    <h2>
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        Bill Calculation Results
+                    </h2>
+                    <div class="result-item">
+                        <span class="result-label">Total Cost:</span>
+                        <span class="value" id="totalCost">Tk 0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Average Cost per Unit:</span>
+                        <span class="value" id="avgPerUnit">Tk 0.00</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Daily Consumption:</span>
+                        <span class="value" id="kwhPerDay">0.00 kWh</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Daily Cost:</span>
+                        <span class="value" id="costPerDay">Tk 0.00</span>
+                    </div>
+                    
+                    <div class="breakdown">
+                        <h3>
+                            <i class="fas fa-receipt"></i>
+                            Cost Breakdown
+                        </h3>
+                        <div class="breakdown-item">
+                            <span>Energy Cost:</span>
+                            <span class="breakdown-value" id="energyCost">Tk 0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>VAT (<span id="vatPercent">5</span>%):</span>
+                            <span class="breakdown-value" id="vatAmount">Tk 0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Rebate (<span id="rebatePercent">2</span>%):</span>
+                            <span class="breakdown-value" id="rebateAmount">Tk -0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Meter Rent:</span>
+                            <span class="breakdown-value" id="meterRentAmount">Tk 0.00</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Demand Charge:</span>
+                            <span class="breakdown-value" id="demandChargeAmount">Tk 0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn-secondary" onclick="downloadPDF()">
+                            <i class="fas fa-download"></i> PDF
+                        </button>
+                        <button class="btn-secondary" onclick="window.print()">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                    </div>
+                    
+                    <div class="social-sharing">
+                        <div class="social-btn facebook" onclick="shareOnFacebook()">
+                            <i class="fab fa-facebook-f"></i>
+                        </div>
+                        <div class="social-btn twitter" onclick="shareOnTwitter()">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <div class="social-btn whatsapp" onclick="shareOnWhatsApp()">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="social-btn email" onclick="shareViaEmail()">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="edit-controls">
+                    <button class="btn-success" id="toggleSlabEditor">
+                        <i class="fas fa-edit"></i> Edit Slabs
+                    </button>
+                    <button class="btn-danger" onclick="resetSlabs()">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                </div>
+                
+                <div class="slab-editor" id="slabEditor">
+                    <h3 style="color: #0a3d62; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-edit"></i>
+                        Edit Tariff Slabs
+                    </h3>
+                    <div id="slabEditContainer">
+                        <!-- Slabs will be added here dynamically -->
+                    </div>
+                    <button class="add-slab-btn" onclick="addSlabRow()">
+                        <i class="fas fa-plus"></i> Add Slab
+                    </button>
+                </div>
+                
+                <table class="slab-table" id="slabTable">
+                    <thead>
+                        <tr>
+                            <th>Step</th>
+                            <th>Consumption Range (kWh)</th>
+                            <th>Rate (Tk/kWh)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="slabTableBody">
+                        <!-- Slabs will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <footer>
+            <i class="fas fa-exclamation-circle"></i>
+            © 2024 BPDB LT-A Electricity Calculator | For official use only
+        </footer>
+    </div>
+
+    <script>
+        // Default slab structure
+        const defaultSlabs = [
+            { min: 0, max: 50, rate: 4.63 },
+            { min: 51, max: 75, rate: 5.26 },
+            { min: 76, max: 200, rate: 7.20 },
+            { min: 201, max: 300, rate: 7.59 },
+            { min: 301, max: 400, rate: 8.02 },
+            { min: 401, max: 600, rate: 12.67 },
+            { min: 601, max: Infinity, rate: 14.61 }
+        ];
+        
+        let slabs = JSON.parse(JSON.stringify(defaultSlabs));
+        let currentLanguage = 'en';
+        
+        // Initialize the calculator
+        function init() {
+            renderSlabTable();
+            renderSlabEditor();
+            calculateCost();
+            
+            // Set up event listeners
+            document.getElementById('toggleSlabEditor').addEventListener('click', toggleSlabEditor);
+            document.getElementById('languageToggle').addEventListener('click', toggleLanguage);
+        }
+        
+        // Toggle language between English and Bangla
+        function toggleLanguage(e) {
+            if (e.target.tagName === 'SPAN') {
+                currentLanguage = e.target.dataset.lang;
+                document.querySelectorAll('#languageToggle span').forEach(span => {
+                    span.classList.toggle('active', span.dataset.lang === currentLanguage);
+                });
+                
+                // In a real implementation, you would translate all text here
+                alert(`Language switched to ${currentLanguage === 'en' ? 'English' : 'Bangla'}. This is a demo - full translation would be implemented in a production environment.`);
+            }
+        }
+        
+        // Render the slab table
+        function renderSlabTable() {
+            const tbody = document.getElementById('slabTableBody');
+            tbody.innerHTML = '';
+            
+            slabs.forEach((slab, index) => {
+                const row = document.createElement('tr');
+                if (index === 4) row.classList.add('highlight');
+                
+                const rangeText = slab.max === Infinity ? 
+                    `${slab.min}+` : 
+                    `${slab.min} - ${slab.max}`;
+                
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${rangeText}</td>
+                    <td class="slab-rate">${slab.rate.toFixed(2)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Render the slab editor
+        function renderSlabEditor() {
+            const container = document.getElementById('slabEditContainer');
+            container.innerHTML = '';
+            
+            slabs.forEach((slab, index) => {
+                const row = document.createElement('div');
+                row.className = 'slab-edit-row';
+                row.innerHTML = `
+                    <input type="number" class="slab-min" value="${slab.min}" placeholder="Min" step="1" min="0">
+                    <input type="number" class="slab-max" value="${slab.max === Infinity ? '' : slab.max}" placeholder="Max" step="1" min="0">
+                    <input type="number" class="slab-rate" value="${slab.rate}" placeholder="Rate" step="0.01" min="0">
+                    <div class="remove-slab" onclick="removeSlab(${index})">
+                        <i class="fas fa-times"></i>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+        
+        // Toggle the slab editor visibility
+        function toggleSlabEditor() {
+            const editor = document.getElementById('slabEditor');
+            editor.classList.toggle('active');
+            this.innerHTML = editor.classList.contains('active') ? 
+                '<i class="fas fa-eye"></i> View Slabs' : 
+                '<i class="fas fa-edit"></i> Edit Slabs';
+        }
+        
+        // Add a new slab row
+        function addSlabRow() {
+            slabs.push({ min: 0, max: 0, rate: 0 });
+            renderSlabEditor();
+        }
+        
+        // Remove a slab
+        function removeSlab(index) {
+            if (slabs.length <= 1) {
+                alert("You must have at least one slab!");
+                return;
+            }
+            
+            slabs.splice(index, 1);
+            renderSlabEditor();
+        }
+        
+        // Reset slabs to default
+        function resetSlabs() {
+            slabs = JSON.parse(JSON.stringify(defaultSlabs));
+            renderSlabTable();
+            renderSlabEditor();
+        }
+        
+        // Update slabs from editor
+        function updateSlabs() {
+            const rows = document.querySelectorAll('.slab-edit-row');
+            slabs = [];
+            
+            rows.forEach(row => {
+                const min = parseFloat(row.querySelector('.slab-min').value) || 0;
+                const maxInput = row.querySelector('.slab-max').value;
+                const max = maxInput === '' ? Infinity : parseFloat(maxInput);
+                const rate = parseFloat(row.querySelector('.slab-rate').value) || 0;
+                
+                if (!isNaN(min) && !isNaN(rate)) {
+                    slabs.push({ min, max, rate });
+                }
+            });
+            
+            // Sort slabs by min value
+            slabs.sort((a, b) => a.min - b.min);
+            
+            renderSlabTable();
+        }
+        
+        // Calculate electricity cost
+        function calculateCost() {
+            updateSlabs();
+            
+            // Get input values
+            const units = parseFloat(document.getElementById('units').value);
+            const days = parseInt(document.getElementById('days').value);
+            
+            // Get customizable charge values
+            const vatPercent = parseFloat(document.getElementById('vatValue').value);
+            const rebatePercent = parseFloat(document.getElementById('rebateValue').value);
+            const meterRent = parseFloat(document.getElementById('meterRentValue').value);
+            const demandCharge = parseFloat(document.getElementById('demandChargeValue').value);
+            
+            // Get toggle states
+            const includeVAT = document.getElementById('includeVAT').checked;
+            const includeRebate = document.getElementById('includeRebate').checked;
+            const includeMeterRent = document.getElementById('includeMeterRent').checked;
+            const includeDemandCharge = document.getElementById('includeDemandCharge').checked;
+            
+            // Update displayed percentages
+            document.getElementById('vatPercent').textContent = vatPercent;
+            document.getElementById('rebatePercent').textContent = rebatePercent;
+            
+            // Validate inputs
+            if (isNaN(units)) {
+                alert("Please enter valid units (numbers only)!");
+                return;
+            }
+            
+            if (isNaN(days) || days < 1) {
+                alert("Please enter a valid number of days (minimum 1 day)!");
+                return;
+            }
+            
+            let remaining = units;
+            let energyCost = 0;
+            
+            // Calculate cost based on slabs
+            for (let slab of slabs) {
+                if (remaining <= 0) break;
+                
+                const slabUnits = slab.max === Infinity ? 
+                    remaining : 
+                    Math.min(remaining, slab.max - slab.min + 1);
+                
+                if (slabUnits > 0) {
+                    energyCost += slabUnits * slab.rate;
+                    remaining -= slabUnits;
+                }
+            }
+            
+            // Calculate additional charges based on toggle states
+            let vatAmount = 0;
+            let rebateAmount = 0;
+            let meterRentAmount = 0;
+            let demandChargeAmount = 0;
+            
+            if (includeVAT) {
+                vatAmount = energyCost * (vatPercent / 100);
+            }
+            
+            if (includeRebate) {
+                rebateAmount = (energyCost + vatAmount) * (rebatePercent / 100);
+            }
+            
+            if (includeMeterRent) {
+                meterRentAmount = meterRent;
+            }
+            
+            if (includeDemandCharge) {
+                demandChargeAmount = demandCharge;
+            }
+            
+            // Calculate total cost
+            let totalCost = energyCost + vatAmount - rebateAmount + meterRentAmount + demandChargeAmount;
+            
+            // Calculate derived values
+            const avgPerUnit = units > 0 ? totalCost / units : 0;
+            const costPerDay = totalCost / days;
+            const kwhPerDay = units / days;
+            
+            // Display results
+            document.getElementById('energyCost').textContent = `Tk ${energyCost.toFixed(2)}`;
+            document.getElementById('vatAmount').textContent = includeVAT ? `Tk ${vatAmount.toFixed(2)}` : 'Not applied';
+            document.getElementById('rebateAmount').textContent = includeRebate ? `Tk -${rebateAmount.toFixed(2)}` : 'Not applied';
+            document.getElementById('meterRentAmount').textContent = includeMeterRent ? `Tk ${meterRentAmount.toFixed(2)}` : 'Not applied';
+            document.getElementById('demandChargeAmount').textContent = includeDemandCharge ? `Tk ${demandChargeAmount.toFixed(2)}` : 'Not applied';
+            
+            document.getElementById('totalCost').textContent = `Tk ${totalCost.toFixed(2)}`;
+            document.getElementById('avgPerUnit').textContent = `Tk ${avgPerUnit.toFixed(2)}`;
+            document.getElementById('kwhPerDay').textContent = `${kwhPerDay.toFixed(2)} kWh`;
+            document.getElementById('costPerDay').textContent = `Tk ${costPerDay.toFixed(2)}`;
+            
+            // Show results section
+            document.getElementById('results').classList.add('active');
+        }
+        
+        // Download PDF
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const results = document.getElementById('results');
+            const logo = document.querySelector('.logo').cloneNode(true);
+            logo.style.position = 'static';
+            logo.style.marginBottom = '15px';
+            
+            // Create a temporary element to capture
+            const tempElement = document.createElement('div');
+            tempElement.style.position = 'absolute';
+            tempElement.style.left = '-9999px';
+            tempElement.style.width = '600px';
+            tempElement.style.padding = '20px';
+            tempElement.style.background = 'white';
+            
+            // Clone and style the content
+            const clone = results.cloneNode(true);
+            clone.insertBefore(logo, clone.firstChild);
+            tempElement.appendChild(clone);
+            document.body.appendChild(tempElement);
+            
+            html2canvas(tempElement).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 210; // A4 width in mm
+                const pageHeight = 297; // A4 height in mm
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                let heightLeft = imgHeight;
+                
+                doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+                
+                // Add new pages if needed
+                while (heightLeft >= 0) {
+                    doc.addPage();
+                    doc.addImage(imgData, 'PNG', 0, -heightLeft, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                doc.save('BPDB-Electricity-Bill.pdf');
+                document.body.removeChild(tempElement);
+            });
+        }
+        
+        // Social sharing functions
+        function shareOnFacebook() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent("Check out my electricity bill calculation from BPDB!");
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank');
+        }
+        
+        function shareOnTwitter() {
+            const text = encodeURIComponent("My electricity bill calculation from BPDB!");
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+        
+        function shareOnWhatsApp() {
+            const text = encodeURIComponent("Check out my electricity bill calculation: " + window.location.href);
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+        
+        function shareViaEmail() {
+            const subject = encodeURIComponent("My BPDB Electricity Bill Calculation");
+            const body = encodeURIComponent(`Check out my electricity bill calculation:\n\n${window.location.href}`);
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+        
+        // Initialize on load
+        window.onload = init;
+    </script>
+</body>
+</html>
