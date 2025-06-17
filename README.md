@@ -1,66 +1,118 @@
-# bpdb-calculator
-The BPDB LT-A Electricity Cost Calculator is an web-based tool designed specifically for residential prepaid meter consumers in Bangladesh. This powerful calculator helps users accurately estimate their electricity bills based on the latest tariff structure from the Bangladesh Power Development Board (February 2024 rates).
-# BPDB LT-A Electricity Cost Calculator: Comprehensive Description
+# BPDB LT-A Electricity Cost Calculator
 
-## Key Features
+A modern, responsive, and bilingual (EN/BN) electricity bill calculator for BPDB Residential Prepaid Meter users.  
+Supports slab editing, bill history, export, and official tariff updates.
 
-### ⚡ Precise Bill Calculation
-- Automatically calculates costs using BPDB's official slab rate system
-- Supports all 7 tariff slabs with up-to-date rates
-- Calculates daily consumption patterns and average cost per unit
+---
 
-### 🛠️ Customizable Options
-- **Adjustable Charges**: Toggle VAT (5%), rebate (2%), meter rent (40 Tk), and demand charge (84 Tk)
-- **Editable Tariff Slabs**: Modify existing slabs or add new ones as needed
-- **Reset Function**: Instantly restore default tariff values with one click
+## ✨ Features
 
-### 📊 Detailed Breakdown
-- Clear cost segmentation showing:
-  - Energy consumption cost
-  - Additional charges (VAT, rebate, etc.)
-  - Daily usage patterns
-  - Cost per unit analysis
+- **EN/BN Language Toggle**  
+  Switch seamlessly between English and Bangla. All labels, notes, tables, and buttons are translated instantly.
 
-### 🌐 Multi-Language Support
-- Toggle between English and Bangla interfaces
-- Fully localized experience for Bangladeshi users
+- **Official Tariff Slab Support**  
+  Default slabs reflect the BPDB official rates as of February 2024.  
+  _You can edit, add, or reset slabs as needed._
 
-### 📤 Export & Sharing Options
-- **Download as PDF**: Save your bill calculation for records
-- **Print Function**: Generate hard copies directly from your browser
-- **Social Sharing**: Share results via Facebook, Twitter, WhatsApp, and Email
+- **Customizable Extra Charges**  
+  - VAT (%)
+  - Rebate (%)
+  - Meter Rent (Tk)
+  - Demand Charge (Tk)
+  - Enable/disable and set custom values for each
 
-### 📱 User-Friendly Design
-- Clean, professional interface with BPDB branding
-- Responsive layout works on mobile, tablet, and desktop
-- Smooth animations and visual feedback
-- Step-by-step guidance for first-time users
+- **Clear Cost Breakdown**  
+  Displays:  
+  - Energy Cost
+  - VAT
+  - Rebate
+  - Meter Rent
+  - Demand Charge
+  - Total, per-day, and per-unit averages
 
-## Who Should Use This Calculator?
+- **Calculation History**  
+  Saves your last 20 calculations (in your browser).  
+  Clear history with one click.
 
-- 🏠 **Residential consumers** with prepaid electricity meters
-- 🧾 Anyone wanting to verify their BPDB electricity bill
-- 💰 Budget-conscious households tracking energy expenses
-- 📈 Researchers analyzing electricity consumption patterns
-- 🌱 Environmentally conscious users monitoring energy usage
+- **Export & Share**  
+  - Download as PDF or Image
+  - Print-friendly
+  - Share to Facebook, Twitter, WhatsApp, or Email
 
-## Technical Details
+- **Responsive Design**  
+  Looks great on desktop and mobile.
 
-- **Data Source**: Official BPDB LT-A Tariff (February 2024)
-- **Coverage**: Valid for all areas under Bangladesh Power Development Board
-- **Accuracy**: Provides estimates within 1-2% of actual bills
-- **Platform**: Pure web-based - no installation required
-- **Security**: No personal data collection or storage
+---
 
-## Sample Use Case
-"Mr. Rahman consumes 325 kWh over 30 days. The calculator shows:
-- Energy Cost: Tk 1,895.25
-- With VAT and other charges: Tk 2,055.78
-- Daily Cost: Tk 68.53
-- Cost per Unit: Tk 6.33
-He can then share this breakdown with family via WhatsApp."
+## 🚀 Live Demo
 
-## Disclaimer
-*This calculator is designed specifically for BPDB residential prepaid meter consumers. Commercial users or those with postpaid meters should consult official BPDB resources. Results are estimates based on the latest tariff information - actual bills may vary slightly due to rounding and local regulations.*
+[Try it now &rarr;](https://shariar100.github.io/bpdb-calculator/)
 
-**Try the BPDB Electricity Cost Calculator today and take control of your energy expenses!**
+---
+
+## 🛠 Usage
+
+1. **Clone or Download**
+    ```sh
+    git clone https://github.com/shariar100/bpdb-calculator.git
+    cd bpdb-calculator
+    ```
+
+2. **Open `index.html`**  
+   Double-click to use locally, or deploy to GitHub Pages/Netlify/etc.
+
+---
+
+## 📝 How to Use
+
+- **Select Language:**  
+  Use the EN/BN toggle at the top right.
+
+- **Input Units & Days:**  
+  - Enter _total units consumed (kWh)_.
+  - Enter _number of days in billing period_.
+
+- **Customize Extra Charges:**  
+  Toggle and set VAT, Rebate, Meter Rent, and Demand Charge as needed.
+
+- **Edit Slabs:**  
+  - Click **Edit Slabs** to add/remove/customize tariff slabs.
+  - **Reset** returns to official defaults.
+
+- **View Results:**  
+  Cost summary and full breakdown appear after calculation.
+
+- **Export & History:**  
+  - Use the PDF, Image, and Print buttons below the results.
+  - Your recent calculations are listed and can be cleared.
+
+---
+
+## 📦 File Structure
+
+```
+bpdb-calculator/
+├── index.html      # Main application file (EN/BN bilingual, all logic in one file)
+├── README.md       # This file
+```
+
+---
+
+## 📣 Notes
+
+- This tool is for **BPDB Residential Prepaid Meter** users.
+- Rates are based on the **official February 2024 BPDB tariff**.
+- Always verify the latest rates from [BPDB official sources](https://bpdb.gov.bd/).
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome!  
+For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+## 📄 License
+
+[MIT](LICENSE)
