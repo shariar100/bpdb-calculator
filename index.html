@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BPDB LT-A Electricity Cost Calculator with History</title>
+    <title data-translate="LT-A Electricity Cost Calculator">BPDB LT-A Electricity Cost Calculator with History</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        /* ...[CSS unchanged, keep all your original CSS here]... */
         body {
             background: linear-gradient(135deg, #1a2a6c, #2a4d69);
             color: #333;
@@ -73,6 +74,14 @@
             border-radius: 10px;
             padding: 25px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .helper-text {
+            color: #888;
+            font-size: 0.96em;
+            margin-top: 3px;
+        }
+        .input-warning {
+            margin-top: 3px;
         }
         .input-group { margin-bottom: 20px; }
         label {
@@ -422,8 +431,6 @@
             font-size: 14px;
         }
         .clear-history-btn:hover { background: #c82333; }
-
-        /* ---- Mobile Improvements ---- */
         @media (max-width: 600px) {
           .container {
             max-width: 100vw;
@@ -439,7 +446,7 @@
           .input-section, .result-section, .slab-editor {
             padding: 12px 5px;
             border-radius: auto;
-            min-width: 330px;
+            min-width: 0;
           }
           .results h2, .breakdown h3, .history-section h3 {
             font-size: 1.1rem;
@@ -471,63 +478,80 @@
           min-width: 320px;
         }
         @keyframes pulse {
-  0% {
-    transform: scale(1);
-    filter: brightness(1);
-  }
-  50% {
-    transform: scale(1.25);
-    filter: brightness(1.4);
-  }
-  100% {
-    transform: scale(1);
-    filter: brightness(1);
-  }
-}
-.pulse {
-  animation: pulse 1s infinite;
-}
+          0% { transform: scale(1); filter: brightness(1);}
+          50% { transform: scale(1.25); filter: brightness(1.4);}
+          100% { transform: scale(1); filter: brightness(1);}
+        }
+        .pulse { animation: pulse 1s infinite; }
+        .bpdb-link-group {
+          display: flex;
+          gap: 18px;
+          justify-content: center;
+          margin: 18px 0 0 0;
+          flex-wrap: wrap;
+        }
+        .bpdb-link {
+          color: #1976d2;
+          font-weight: bold;
+          text-decoration: underline;
+          transition: color 0.2s, background 0.2s;
+          padding: 6px 14px;
+          border-radius: 20px;
+          background: #e3f2fd;
+          border: 1px solid #bbdefb;
+          margin: 4px 0;
+        }
+        .bpdb-link:hover, .bpdb-link:focus {
+          color: #fff;
+          background: #1976d2;
+          text-decoration: none;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <header>
-    	<div class="logo">
-    <i class="fas fa-bolt pulse"></i>
-    <span>BPDB</span>
-</div>
-        <div class="language-toggle" id="languageToggle">
-            <span class="active" data-lang="en">EN</span>
-            <span data-lang="bn">BN</span>
+        <div class="logo">
+            <i class="fas fa-bolt pulse"></i>
+            <span>BPDB</span>
         </div>
-        <h1>
+        <div class="language-toggle" id="languageToggle" aria-label="Change language" role="group">
+            <span class="active" data-lang="en" tabindex="0">EN</span>
+            <span data-lang="bn" tabindex="0">BN</span>
+        </div>
+        <h1 data-translate="LT-A Electricity Cost Calculator">
             <i class="fas fa-calculator"></i>
             LT-A Electricity Cost Calculator
         </h1>
-        <p>Official Tariff as of February 2024</p>
+        <p data-translate="Official Tariff as of February 2024">Official Tariff as of February 2024</p>
     </header>
-    <div class="tariff-info">
+    <div class="tariff-info" data-translate="Calculate your electricity bill with customizable charges">
         <i class="fas fa-info-circle"></i>
         Calculate your electricity bill with customizable charges
     </div>
     <div class="calculator">
         <div class="input-section">
             <div class="input-group">
-                <label for="units" id="units-label">
+                <label for="units" id="units-label" data-translate="Enter total units consumed (kWh):">
                     <i class="fas fa-bolt"></i>
                     Enter total units consumed (kWh):
                 </label>
-                <input type="number" id="units" min="0" step="0.01" placeholder="e.g., 325" aria-labelledby="units-label" value="325">
+                <input type="number" id="units" min="0" step="0.01" placeholder="e.g., 150" aria-labelledby="units-label" value="150">
+                <div class="helper-text" data-translate="Check your electricity bill or prepaid meter display for total units used.">Check your electricity bill or prepaid meter display for total units used.</div>
+                <div class="input-warning" id="units-warning" style="display:none;color:#e74c3c;font-size:0.95em;"></div>
             </div>
             <div class="input-group">
-                <label for="days" id="days-label">
+                <label for="days" id="days-label" data-translate="Enter number of days in billing period:">
                     <i class="fas fa-calendar-alt"></i>
                     Enter number of days in billing period:
                 </label>
                 <input type="number" id="days" min="1" value="30" placeholder="e.g., 30" aria-labelledby="days-label">
+                <div class="helper-text" data-translate="Most bills use 28–31 days. Check your bill period for accuracy.">Most bills use 28–31 days. Check your bill period for accuracy.</div>
+                <div class="input-warning" id="days-warning" style="display:none;color:#e74c3c;font-size:0.95em;"></div>
             </div>
             <div class="charge-group">
-                <h3 style="color: #0a3d62; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <h3 style="color: #0a3d62; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;"
+                    data-translate="Customize Additional Charges">
                     <i class="fas fa-cog"></i>
                     Customize Additional Charges
                 </h3>
@@ -537,7 +561,7 @@
                             <input type="checkbox" id="includeVAT" checked>
                             <span class="toggle-slider"></span>
                         </label>
-                        <div class="charge-label">
+                        <div class="charge-label" data-translate="VAT (%)">
                             <i class="fas fa-percentage"></i>
                             VAT (%)
                         </div>
@@ -553,13 +577,13 @@
                             <input type="checkbox" id="includeRebate">
                             <span class="toggle-slider"></span>
                         </label>
-                        <div class="charge-label">
+                        <div class="charge-label" data-translate="Rebate (%)">
                             <i class="fas fa-tag"></i>
                             Rebate (%)
                         </div>
                     </div>
                     <div class="charge-control">
-                        <input type="number" id="rebateValue" class="charge-value" value="2" min="0" max="100" step="0.1">
+                        <input type="number" id="rebateValue" class="charge-value" value="0.5" min="0" max="100" step="0.1">
                         <span>%</span>
                     </div>
                 </div>
@@ -569,7 +593,7 @@
                             <input type="checkbox" id="includeMeterRent" checked>
                             <span class="toggle-slider"></span>
                         </label>
-                        <div class="charge-label">
+                        <div class="charge-label" data-translate="Meter Rent (Tk)">
                             <i class="fas fa-home"></i>
                             Meter Rent (Tk)
                         </div>
@@ -585,7 +609,7 @@
                             <input type="checkbox" id="includeDemandCharge" checked>
                             <span class="toggle-slider"></span>
                         </label>
-                        <div class="charge-label">
+                        <div class="charge-label" data-translate="Demand Charge (Tk)">
                             <i class="fas fa-plug"></i>
                             Demand Charge (Tk)
                         </div>
@@ -596,53 +620,47 @@
                     </div>
                 </div>
             </div>
-            <button onclick="calculateCost()">
+            <button onclick="calculateCost()" data-translate="Calculate Electricity Cost">
                 <i class="fas fa-calculator"></i>
                 Calculate Electricity Cost
             </button>
-            <div style="text-align:center; margin-top:12px;">
-              <a href="http://iprepaid.bpdb.gov.bd:3001/bn/token-check"
-                 target="_blank"
-                 rel="noopener"
-                 style="color:#0a3d62; font-weight:bold; text-decoration:underline;">
-                BPDB Last 3 Tokens
-              </a>
-            </div>
-            <div class="disclaimer">
-                <i class="fas fa-exclamation-triangle"></i>
-                <strong>Note:</strong> This calculator is designed for BPDB Residential Prepaid Meter consumers only.
-                Rates are based on the official February 2024 tariff structure.
-            </div>
+<div class="disclaimer">
+    <i class="fas fa-exclamation-triangle"></i>
+    <strong data-translate="Note:">Note:</strong>
+    <span data-translate="This calculator is designed for BPDB Residential Prepaid Meter consumers only. Rates are based on the official February 2024 tariff structure.">
+        This calculator is designed for BPDB Residential Prepaid Meter consumers only. Rates are based on the official February 2024 tariff structure.
+    </span>
+</div>
         </div>
         <div class="result-section">
             <div class="results" id="results">
-                <h2>
+                <h2 data-translate="Bill Calculation Results">
                     <i class="fas fa-file-invoice-dollar"></i>
                     Bill Calculation Results
                 </h2>
                 <div class="result-item">
-                    <span class="result-label">Total Cost:</span>
+                    <span class="result-label" data-translate="Total Cost:">Total Cost:</span>
                     <span class="value" id="totalCost">Tk 0.00</span>
                 </div>
                 <div class="result-item">
-                    <span class="result-label">Average Cost per Unit:</span>
+                    <span class="result-label" data-translate="Average Cost per Unit:">Average Cost per Unit:</span>
                     <span class="value" id="avgPerUnit">Tk 0.00</span>
                 </div>
                 <div class="result-item">
-                    <span class="result-label">Daily Consumption:</span>
+                    <span class="result-label" data-translate="Daily Consumption:">Daily Consumption:</span>
                     <span class="value" id="kwhPerDay">0.00 kWh</span>
                 </div>
                 <div class="result-item">
-                    <span class="result-label">Daily Cost:</span>
+                    <span class="result-label" data-translate="Daily Cost:">Daily Cost:</span>
                     <span class="value" id="costPerDay">Tk 0.00</span>
                 </div>
                 <div class="breakdown">
-                    <h3>
+                    <h3 data-translate="Cost Breakdown">
                         <i class="fas fa-receipt"></i>
                         Cost Breakdown
                     </h3>
                     <div class="breakdown-item">
-                        <span>Energy Cost:</span>
+                        <span data-translate="Energy Cost:">Energy Cost:</span>
                         <span class="breakdown-value" id="energyCost">Tk 0.00</span>
                     </div>
                     <div class="breakdown-item">
@@ -650,83 +668,87 @@
                         <span class="breakdown-value" id="vatAmount">Tk 0.00</span>
                     </div>
                     <div class="breakdown-item">
-                        <span>Rebate (<span id="rebatePercent">2</span>%):</span>
+                        <span>Rebate (<span id="rebatePercent">0.5</span>%):</span>
                         <span class="breakdown-value" id="rebateAmount">Tk -0.00</span>
                     </div>
                     <div class="breakdown-item">
-                        <span>Meter Rent:</span>
+                        <span data-translate="Meter Rent:">Meter Rent:</span>
                         <span class="breakdown-value" id="meterRentAmount">Tk 0.00</span>
                     </div>
                     <div class="breakdown-item">
-                        <span>Demand Charge:</span>
+                        <span data-translate="Demand Charge:">Demand Charge:</span>
                         <span class="breakdown-value" id="demandChargeAmount">Tk 0.00</span>
                     </div>
                 </div>
                 <div class="history-section">
                     <div class="history-header">
-                        <h3>
+                        <h3 data-translate="Recent Calculations">
                             <i class="fas fa-history"></i>
                             Recent Calculations
                         </h3>
-                        <button class="clear-history-btn" onclick="clearHistory()">
+                        <button class="clear-history-btn" onclick="clearHistory()" data-translate="Clear History">
                             <i class="fas fa-trash"></i> Clear History
                         </button>
                     </div>
                     <ul class="history-list" id="historyList" aria-live="polite">
-                        <li class="history-empty">No calculation history yet</li>
+                        <li class="history-empty" data-translate="No calculation history yet">No calculation history yet</li>
                     </ul>
                 </div>
                 <div class="btn-group">
-                    <button class="btn-secondary" onclick="downloadPDF()">
+                    <button class="btn-secondary" onclick="downloadPDF()" data-translate="PDF">
                         <i class="fas fa-download"></i> PDF
                     </button>
-                    <button class="btn-secondary" onclick="window.print()">
+                    <button class="btn-secondary" onclick="downloadImage()" data-translate="Image">
+                        <i class="fas fa-image"></i> Image
+                    </button>
+                    <button class="btn-secondary" onclick="window.print()" data-translate="Print">
                         <i class="fas fa-print"></i> Print
                     </button>
                 </div>
                 <div class="social-sharing">
-                    <div class="social-btn facebook" onclick="shareOnFacebook()">
+                    <div class="social-btn facebook" onclick="shareOnFacebook()" tabindex="0">
                         <i class="fab fa-facebook-f"></i>
                     </div>
-                    <div class="social-btn twitter" onclick="shareOnTwitter()">
+                    <div class="social-btn twitter" onclick="shareOnTwitter()" tabindex="0">
                         <i class="fab fa-twitter"></i>
                     </div>
-                    <div class="social-btn whatsapp" onclick="shareOnWhatsApp()">
+                    <div class="social-btn whatsapp" onclick="shareOnWhatsApp()" tabindex="0">
                         <i class="fab fa-whatsapp"></i>
                     </div>
-                    <div class="social-btn email" onclick="shareViaEmail()">
+                    <div class="social-btn email" onclick="shareViaEmail()" tabindex="0">
                         <i class="fas fa-envelope"></i>
                     </div>
                 </div>
             </div>
             <div class="edit-controls">
-                <button class="btn-success" id="toggleSlabEditor">
+                <button class="btn-success" id="toggleSlabEditor" data-translate="Edit Slabs">
                     <i class="fas fa-edit"></i> Edit Slabs
                 </button>
-                <button class="btn-danger" onclick="resetSlabs()">
+                <button class="btn-danger" onclick="resetSlabs()" data-translate="Reset">
                     <i class="fas fa-undo"></i> Reset
                 </button>
             </div>
             <div class="slab-editor" id="slabEditor">
-                <h3 style="color: #0a3d62; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <h3 style="color: #0a3d62; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;" data-translate="Edit Tariff Slabs">
                     <i class="fas fa-edit"></i>
                     Edit Tariff Slabs
                 </h3>
                 <div id="slabEditContainer">
                     <!-- Slabs will be added here dynamically -->
                 </div>
-                <button class="add-slab-btn" onclick="addSlabRow()">
+                <button class="add-slab-btn" onclick="addSlabRow()" data-translate="Add Slab">
                     <i class="fas fa-plus"></i> Add Slab
                 </button>
                 <div class="slab-update-reminder" style="margin-top:18px; background:#fff3cd; border-left:4px solid #ffc107; padding:12px; border-radius:6px;">
                     <i class="fas fa-exclamation-circle" style="color:#ffc107;"></i>
-                    <strong>Manual update reminder:</strong>
-                    Please verify slab rates regularly.
+                    <strong data-translate="Manual update reminder:">Manual update reminder:</strong>
+                    <span data-translate="Please verify slab rates regularly.">Please verify slab rates regularly.</span>
                     <br>
                     <a href="https://bpdb.gov.bd/site/page/c413c44f-9611-4320-82da-b298fe69157e/%E0%A6%9F%E0%A7%8D%E0%A6%AF%E0%A6%BE%E0%A6%B0%E0%A6%BF%E0%A6%AB-%E0%A6%B0%E0%A7%87%E0%A6%9F"
                        target="_blank"
                        rel="noopener"
-                       style="color:#0a3d62; font-weight:bold; text-decoration:underline;">
+                       style="color:#0a3d62; font-weight:bold; text-decoration:underline;"
+                       data-translate="Check for official updates here">
                        Check for official updates here
                     </a>
                 </div>
@@ -734,232 +756,41 @@
             <table class="slab-table" id="slabTable">
                 <thead>
                     <tr>
-                        <th>Step</th>
-                        <th>Consumption Range (kWh)</th>
-                        <th>Rate (Tk/kWh)</th>
+                        <th scope="col" data-translate="Step">Step</th>
+                        <th scope="col" data-translate="Consumption Range (kWh)">Consumption Range (kWh)</th>
+                        <th scope="col" data-translate="Rate (Tk/kWh)">Rate (Tk/kWh)</th>
                     </tr>
                 </thead>
                 <tbody id="slabTableBody">
                     <!-- Slabs will be added here dynamically -->
                 </tbody>
             </table>
+            <div class="bpdb-link-group">
+                <a id="bpdbTokenLink" class="bpdb-link" href="https://web.bpdbprepaid.gov.bd/bn/token-check" target="_blank" rel="noopener" data-translate="BPDB Last 3 Tokens">
+                    BPDB Last 3 Tokens
+                </a>
+                <a id="bpdbShortCodeLink" class="bpdb-link" href="https://web.bpdbprepaid.gov.bd/bn/meter-short-codes" target="_blank" rel="noopener" data-translate="BPDB Meter Short Code">
+                    BPDB Meter Short Code
+                </a>
+                <a id="bpdbEnergyCalcLink" class="bpdb-link" href="https://web.bpdbprepaid.gov.bd/bn/bill-calculator" target="_blank" rel="noopener" data-translate="Prepaid Meter Energy Charge Calculator">
+                    Prepaid Meter Energy Charge Calculator
+                </a>
+            </div>
         </div>
     </div>
-    <footer>
-        <i class="fas fa-exclamation-circle"></i>
-        © 2024 BPDB LT-A Electricity Calculator | For official use only
-    </footer>
+<footer id="footer">
+    <i class="fas fa-exclamation-circle"></i>
+    © <span id="footerYear"></span> BPDB LT-A Electricity Calculator
+</footer>
 </div>
 <script>
-// Tariff slabs (default)
-let slabs = [
-    { min: 0, max: 50, rate: 4.63 },
-    { min: 51, max: 75, rate: 5.26 },
-    { min: 76, max: 200, rate: 7.20 },
-    { min: 201, max: 300, rate: 7.59 },
-    { min: 301, max: 400, rate: 8.02 },
-    { min: 401, max: 600, rate: 12.67 },
-    { min: 601, max: Infinity, rate: 14.61 }
-];
-
-// Save and load settings to localStorage
-function saveSettings() {
-    localStorage.setItem('bpdb_slabs', JSON.stringify(slabs));
-}
-function loadSettings() {
-    const slabData = localStorage.getItem('bpdb_slabs');
-    if (slabData) slabs = JSON.parse(slabData);
-}
-function saveHistory(history) {
-    localStorage.setItem('bpdb_history', JSON.stringify(history));
-}
-function loadHistory() {
-    return JSON.parse(localStorage.getItem('bpdb_history') || '[]');
-}
-
-// Slab Table Rendering
-function renderSlabTable() {
-    const tbody = document.getElementById('slabTableBody');
-    tbody.innerHTML = '';
-    slabs.forEach((slab, idx) => {
-        const maxShow = slab.max === Infinity ? '∞' : slab.max;
-        tbody.innerHTML += `<tr>
-            <td>${idx + 1}</td>
-            <td>${slab.min} - ${maxShow}</td>
-            <td class="slab-rate">${slab.rate.toFixed(2)}</td>
-        </tr>`;
-    });
-}
-
-// Slab Editor Rendering
-function renderSlabEditor() {
-    const container = document.getElementById('slabEditContainer');
-    container.innerHTML = '';
-    slabs.forEach((slab, idx) => {
-        container.innerHTML += `
-            <div class="slab-edit-row">
-                <input type="number" min="0" value="${slab.min}" onchange="updateSlab(${idx}, 'min', this.value)">
-                <input type="number" min="0" value="${slab.max === Infinity ? '' : slab.max}" placeholder="Max" onchange="updateSlab(${idx}, 'max', this.value)">
-                <input type="number" min="0" step="0.01" value="${slab.rate}" onchange="updateSlab(${idx}, 'rate', this.value)">
-                <button class="remove-slab" onclick="removeSlab(${idx})"><i class="fas fa-trash"></i></button>
-            </div>
-        `;
-    });
-}
-function updateSlab(idx, field, value) {
-    if (field === 'min') slabs[idx].min = parseInt(value) || 0;
-    if (field === 'max') slabs[idx].max = value === '' ? Infinity : parseInt(value);
-    if (field === 'rate') slabs[idx].rate = parseFloat(value) || 0;
-    saveSettings();
-    renderSlabTable();
-    renderSlabEditor();
-}
-function removeSlab(idx) {
-    if (slabs.length === 1) { alert('You must have at least one slab!'); return; }
-    slabs.splice(idx, 1);
-    saveSettings();
-    renderSlabTable();
-    renderSlabEditor();
-}
-function addSlabRow() {
-    let last = slabs[slabs.length - 1];
-    slabs.push({ min: (last.max === Infinity ? last.min + 1 : last.max + 1), max: Infinity, rate: last.rate });
-    if (last.max === Infinity) last.max = last.min + 99;
-    saveSettings();
-    renderSlabTable();
-    renderSlabEditor();
-}
-function resetSlabs() {
-    if (!confirm('Reset to default slabs?')) return;
-    slabs = [
-        { min: 0, max: 50, rate: 4.63 },
-        { min: 51, max: 75, rate: 5.26 },
-        { min: 76, max: 200, rate: 7.20 },
-        { min: 201, max: 300, rate: 7.59 },
-        { min: 301, max: 400, rate: 8.02 },
-        { min: 401, max: 600, rate: 12.67 },
-        { min: 601, max: Infinity, rate: 14.61 }
-    ];
-    saveSettings();
-    renderSlabTable();
-    renderSlabEditor();
-}
-
-// Calculator Logic
-function calculateCost() {
-    const units = parseFloat(document.getElementById('units').value);
-    const days = parseInt(document.getElementById('days').value);
-    if (isNaN(units) || units < 0) { alert('Please enter valid units (numbers only)!'); return; }
-    if (isNaN(days) || days < 1) { alert('Please enter a valid number of days (minimum 1 day)!'); return; }
-    let remaining = units, energyCost = 0;
-    for (let slab of slabs) {
-        let slabMax = slab.max === Infinity ? units : slab.max;
-        let slabMin = slab.min;
-        let slabUnits = Math.max(0, Math.min(remaining, slabMax - slabMin + 1));
-        if (slabUnits > 0) {
-            let cost = slabUnits * slab.rate;
-            energyCost += cost;
-            remaining -= slabUnits;
-        }
-        if (remaining <= 0) break;
-    }
-    // Charges
-    let vatChecked = document.getElementById('includeVAT').checked;
-    let rebateChecked = document.getElementById('includeRebate').checked;
-    let meterRentChecked = document.getElementById('includeMeterRent').checked;
-    let demandChargeChecked = document.getElementById('includeDemandCharge').checked;
-    let vatValue = parseFloat(document.getElementById('vatValue').value) || 0;
-    let rebateValue = parseFloat(document.getElementById('rebateValue').value) || 0;
-    let meterRent = meterRentChecked ? (parseFloat(document.getElementById('meterRentValue').value) || 0) : 0;
-    let demandCharge = demandChargeChecked ? (parseFloat(document.getElementById('demandChargeValue').value) || 0) : 0;
-    let vat = vatChecked ? energyCost * vatValue / 100 : 0;
-    let rebate = rebateChecked ? energyCost * rebateValue / 100 : 0;
-    // Results
-    let total = energyCost + vat - rebate + meterRent + demandCharge;
-    let avgPerUnit = total / units;
-    let kwhPerDay = units / days;
-    let costPerDay = total / days;
-    // Display
-    document.getElementById('energyCost').textContent = 'Tk ' + energyCost.toFixed(2);
-    document.getElementById('vatAmount').textContent = 'Tk ' + vat.toFixed(2);
-    document.getElementById('rebateAmount').textContent = 'Tk -' + rebate.toFixed(2);
-    document.getElementById('meterRentAmount').textContent = 'Tk ' + meterRent.toFixed(2);
-    document.getElementById('demandChargeAmount').textContent = 'Tk ' + demandCharge.toFixed(2);
-    document.getElementById('totalCost').textContent = 'Tk ' + total.toFixed(2);
-    document.getElementById('avgPerUnit').textContent = 'Tk ' + avgPerUnit.toFixed(2);
-    document.getElementById('kwhPerDay').textContent = kwhPerDay.toFixed(2) + ' kWh';
-    document.getElementById('costPerDay').textContent = 'Tk ' + costPerDay.toFixed(2);
-    document.getElementById('results').classList.add('active');
-    document.getElementById('vatPercent').textContent = vatValue;
-    document.getElementById('rebatePercent').textContent = rebateValue;
-    // Save to history
-    let history = loadHistory();
-    history.unshift({
-        units, days, total: total.toFixed(2),
-        date: new Date().toLocaleString()
-    });
-    if (history.length > 20) history.pop();
-    saveHistory(history);
-    renderHistory();
-}
-
-// History
-function renderHistory() {
-    let history = loadHistory();
-    let list = document.getElementById('historyList');
-    if (!history.length) {
-        list.innerHTML = '<li class="history-empty">No calculation history yet</li>';
-        return;
-    }
-    list.innerHTML = '';
-    history.forEach(item => {
-        list.innerHTML += `<li>
-            <span class="history-units">${item.units} kWh</span>
-            <span class="history-cost">Tk ${item.total}</span>
-            <span class="history-date">${item.date}</span>
-        </li>`;
-    });
-}
-function clearHistory() {
-    if (!confirm('Clear all calculation history?')) return;
-    saveHistory([]);
-    renderHistory();
-}
-
-// PDF/Print
-function downloadPDF() {
-    const { jsPDF } = window.jspdf;
-    html2canvas(document.querySelector('.results')).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF();
-        pdf.addImage(imgData, 'PNG', 5, 5, 200, 0);
-        pdf.save('bpdb_bill.pdf');
-    });
-}
-
-// Social Sharing
-function shareOnFacebook() {
-    window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(location.href), '_blank');
-}
-function shareOnTwitter() {
-    window.open('https://twitter.com/intent/tweet?url=' + encodeURIComponent(location.href), '_blank');
-}
-function shareOnWhatsApp() {
-    window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(location.href), '_blank');
-}
-function shareViaEmail() {
-    window.location = `mailto:?subject=BPDB LT-A Electricity Bill Calculator&body=Try this tool: ${location.href}`;
-}
-
-// Slab Editor Toggle
-document.getElementById('toggleSlabEditor').onclick = function() {
-    document.getElementById('slabEditor').classList.toggle('active');
-};
-
-// Translation (English/Bengali)
+/* ----------- Improved Translations ----------- */
 const translations = {
     en: {
         "LT-A Electricity Cost Calculator": "LT-A Electricity Cost Calculator",
+        "BPDB Last 3 Tokens": "BPDB Last 3 Tokens",
+        "BPDB Meter Short Code": "BPDB Meter Short Code",
+        "Prepaid Meter Energy Charge Calculator": "Prepaid Meter Energy Charge Calculator",
         "Official Tariff as of February 2024": "Official Tariff as of February 2024",
         "Calculate your electricity bill with customizable charges": "Calculate your electricity bill with customizable charges",
         "Enter total units consumed (kWh):": "Enter total units consumed (kWh):",
@@ -987,6 +818,7 @@ const translations = {
         "Clear History": "Clear History",
         "No calculation history yet": "No calculation history yet",
         "PDF": "PDF",
+        "Image": "Image",
         "Print": "Print",
         "Edit Slabs": "Edit Slabs",
         "Reset": "Reset",
@@ -995,111 +827,369 @@ const translations = {
         "Step": "Step",
         "Consumption Range (kWh)": "Consumption Range (kWh)",
         "Rate (Tk/kWh)": "Rate (Tk/kWh)",
+        "Manual update reminder:": "Manual update reminder:",
+        "Please verify slab rates regularly.": "Please verify slab rates regularly.",
+        "Check for official updates here": "Check for official updates here",
         "For official use only": "For official use only",
         "Not applied": "Not applied",
         "Please enter valid units (numbers only)!": "Please enter valid units (numbers only)!",
         "Please enter a valid number of days (minimum 1 day)!": "Please enter a valid number of days (minimum 1 day)!",
-        "You must have at least one slab!": "You must have at least one slab!"
+        "You must have at least one slab!": "You must have at least one slab!",
+        "Reset to default slabs?": "Reset to default slabs?",
+        "Clear all calculation history?": "Clear all calculation history?",
+        "Check your electricity bill or prepaid meter display for total units used.": "Check your electricity bill or prepaid meter display for total units used.",
+        "Most bills use 28–31 days. Check your bill period for accuracy.": "Most bills use 28–31 days. Check your bill period for accuracy."
     },
     bn: {
-        "LT-A Electricity Cost Calculator": "LT-A বিদ্যুৎ খরচ ক্যালকুলেটর",
-        "Official Tariff as of February 2024": "ফেব্রুয়ারি ২০২৪ সালের অফিসিয়াল ট্যারিফ",
-        "Calculate your electricity bill with customizable charges": "কাস্টমাইজেবল চার্জ সহ আপনার বিদ্যুৎ বিল হিসাব করুন",
-        "Enter total units consumed (kWh):": "মোট ব্যবহৃত ইউনিট (কিলোওয়াট-ঘণ্টা) লিখুন:",
-        "Enter number of days in billing period:": "বিলিং সময়ের দিন সংখ্যা লিখুন:",
-        "Customize Additional Charges": "অতিরিক্ত চার্জ কাস্টমাইজ করুন",
+        "LT-A Electricity Cost Calculator": "এলটি-এ বিদ্যুৎ বিল ক্যালকুলেটর",
+        "BPDB Last 3 Tokens": "সর্বশেষ ৩টি টোকেন",
+        "BPDB Meter Short Code": "মিটার শর্ট কোড",
+        "Prepaid Meter Energy Charge Calculator": "প্রিপেইড মিটার বিল ক্যালকুলেটর",
+        "Official Tariff as of February 2024": "ফেব্রুয়ারি ২০২৪ অনুযায়ী অফিসিয়াল ট্যারিফ",
+        "Calculate your electricity bill with customizable charges": "কাস্টমাইজযোগ্য চার্জসহ আপনার বিদ্যুৎ বিল হিসাব করুন",
+        "Enter total units consumed (kWh):": "মোট ব্যবহৃত ইউনিট (কিঃওঃঘঃ):",
+        "Enter number of days in billing period:": "বিল সময়কালের দিন সংখ্যা:",
+        "Customize Additional Charges": "অতিরিক্ত চার্জ কাস্টমাইজ",
         "VAT (%)": "ভ্যাট (%)",
         "Rebate (%)": "রিবেট (%)",
         "Meter Rent (Tk)": "মিটার ভাড়া (টাকা)",
         "Demand Charge (Tk)": "ডিমান্ড চার্জ (টাকা)",
-        "Calculate Electricity Cost": "বিল হিসাব করুন",
+        "Calculate Electricity Cost": "বিদ্যুৎ বিল হিসাব করুন",
         "Note:": "বিঃদ্রঃ",
-        "This calculator is designed for BPDB Residential Prepaid Meter consumers only. Rates are based on the official February 2024 tariff structure.": "এই ক্যালকুলেটর শুধুমাত্র BPDB আবাসিক প্রিপেইড মিটার গ্রাহকদের জন্য। ট্যারিফ ফেব্রুয়ারি ২০২৪ অনুযায়ী।",
+        "This calculator is designed for BPDB Residential Prepaid Meter consumers only. Rates are based on the official February 2024 tariff structure.": "এই ক্যালকুলেটরটি শুধুমাত্র বিপিডিবি আবাসিক প্রিপেইড মিটার গ্রাহকদের জন্য। ফেব্রুয়ারি ২০২৪ অনুযায়ী অফিসিয়াল ট্যারিফ।",
         "Bill Calculation Results": "বিল হিসাবের ফলাফল",
-        "Total Cost:": "মোট বিল:",
-        "Average Cost per Unit:": "প্রতি ইউনিট গড় খরচ:",
-        "Daily Consumption:": "দৈনিক ইউনিট:",
-        "Daily Cost:": "দৈনিক বিল:",
-        "Cost Breakdown": "বিলের বিবরণ",
-        "Energy Cost:": "এনার্জি খরচ:",
+        "Total Cost:": "মোট খরচ:",
+        "Average Cost per Unit:": "প্রতি ইউনিটে গড় খরচ:",
+        "Daily Consumption:": "দৈনিক ব্যবহার:",
+        "Daily Cost:": "দৈনিক খরচ:",
+        "Cost Breakdown": "খরচের বিশদ বিবরণ",
+        "Energy Cost:": "এনার্জি চার্জ:",
         "VAT": "ভ্যাট",
         "Rebate": "রিবেট",
         "Meter Rent:": "মিটার ভাড়া:",
         "Demand Charge:": "ডিমান্ড চার্জ:",
         "Recent Calculations": "সাম্প্রতিক হিসাব",
-        "Clear History": "ইতিহাস মুছুন",
-        "No calculation history yet": "ইতিহাস নেই",
+        "Clear History": "হিসাব মুছুন",
+        "No calculation history yet": "এখনও কোন হিসাব নেই",
         "PDF": "পিডিএফ",
+        "Image": "ছবি",
         "Print": "প্রিন্ট",
-        "Edit Slabs": "স্ল্যাব এডিট",
+        "Edit Slabs": "স্ল্যাব সম্পাদনা",
         "Reset": "রিসেট",
-        "Edit Tariff Slabs": "ট্যারিফ স্ল্যাব এডিট করুন",
+        "Edit Tariff Slabs": "ট্যারিফ স্ল্যাব সম্পাদনা",
         "Add Slab": "নতুন স্ল্যাব",
         "Step": "ধাপ",
-        "Consumption Range (kWh)": "ব্যবহারের সীমা (কিলোওয়াট-ঘণ্টা)",
-        "Rate (Tk/kWh)": "রেট (টাকা/কিলোওয়াট-ঘণ্টা)",
+        "Consumption Range (kWh)": "ব্যবহারের পরিসীমা (কিঃওঃঘঃ)",
+        "Rate (Tk/kWh)": "দর (টাকা/কিঃওঃঘঃ)",
+        "Manual update reminder:": "ম্যানুয়াল আপডেট স্মরণিকা:",
+        "Please verify slab rates regularly.": "অনুগ্রহ করে নিয়মিত স্ল্যাব রেট যাচাই করুন।",
+        "Check for official updates here": "অফিসিয়াল আপডেট এখানে দেখুন",
         "For official use only": "শুধুমাত্র অফিসিয়াল ব্যবহারের জন্য",
         "Not applied": "প্রযোজ্য নয়",
-        "Please enter valid units (numbers only)!": "অনুগ্রহ করে সঠিক ইউনিট (শুধুমাত্র সংখ্যা) লিখুন!",
-        "Please enter a valid number of days (minimum 1 day)!": "বৈধ দিন সংখ্যা লিখুন (কমপক্ষে ১ দিন)!",
-        "You must have at least one slab!": "কমপক্ষে একটি স্ল্যাব থাকতে হবে!"
+        "Please enter valid units (numbers only)!": "অনুগ্রহ করে সঠিক ইউনিট লিখুন (শুধু সংখ্যা)!",
+        "Please enter a valid number of days (minimum 1 day)!": "অনুগ্রহ করে সঠিক দিন সংখ্যা লিখুন (ন্যূনতম ১ দিন)!",
+        "You must have at least one slab!": "কমপক্ষে একটি স্ল্যাব থাকতে হবে!",
+        "Reset to default slabs?": "ডিফল্ট স্ল্যাবে ফিরে যাবেন?",
+        "Clear all calculation history?": "সমস্ত হিসাবের ইতিহাস মুছে ফেলবেন?",
+        "Check your electricity bill or prepaid meter display for total units used.": "আপনার বিদ্যুৎ বিল বা প্রিপেইড মিটারের ডিসপ্লেতে মোট ব্যবহৃত ইউনিট দেখুন।",
+        "Most bills use 28–31 days. Check your bill period for accuracy.": "বেশিরভাগ বিলের সময়কাল ২৮–৩১ দিন। সঠিকতার জন্য বিল দেখুন।"
     }
 };
+
+// Set language and update all elements with data-translate
 function setLanguage(lang) {
+    if (!['en', 'bn'].includes(lang)) {
+        console.error('Invalid language code:', lang);
+        return;
+    }
+    // Toggle active class on language toggle
     document.querySelectorAll('[data-lang]').forEach(el => {
         el.classList.toggle('active', el.getAttribute('data-lang') === lang);
     });
-    const t = translations[lang];
-    // Header
-    document.querySelector('h1').innerHTML = `<i class="fas fa-calculator"></i> ${t["LT-A Electricity Cost Calculator"]}`;
-    document.querySelector('header p').textContent = t["Official Tariff as of February 2024"];
-    document.querySelector('.tariff-info').innerHTML = `<i class="fas fa-info-circle"></i> ${t["Calculate your electricity bill with customizable charges"]}`;
-    // Inputs
-    document.getElementById('units-label').innerHTML = `<i class="fas fa-bolt"></i> ${t["Enter total units consumed (kWh):"]}`;
-    document.getElementById('days-label').innerHTML = `<i class="fas fa-calendar-alt"></i> ${t["Enter number of days in billing period:"]}`;
-    document.querySelector('.charge-group h3').innerHTML = `<i class="fas fa-cog"></i> ${t["Customize Additional Charges"]}`;
-    document.querySelectorAll('.charge-label')[0].innerHTML = `<i class="fas fa-percentage"></i> ${t["VAT (%)"]}`;
-    document.querySelectorAll('.charge-label')[1].innerHTML = `<i class="fas fa-tag"></i> ${t["Rebate (%)"]}`;
-    document.querySelectorAll('.charge-label')[2].innerHTML = `<i class="fas fa-home"></i> ${t["Meter Rent (Tk)"]}`;
-    document.querySelectorAll('.charge-label')[3].innerHTML = `<i class="fas fa-plug"></i> ${t["Demand Charge (Tk)"]}`;
-    document.querySelector('button[onclick="calculateCost()"]').innerHTML = `<i class="fas fa-calculator"></i> ${t["Calculate Electricity Cost"]}`;
-    document.querySelector('.disclaimer').innerHTML = `<i class="fas fa-exclamation-triangle"></i> <strong>${t["Note:"]}</strong> ${t["This calculator is designed for BPDB Residential Prepaid Meter consumers only. Rates are based on the official February 2024 tariff structure."]}`;
-    // Results
-    document.querySelector('.results h2').innerHTML = `<i class="fas fa-file-invoice-dollar"></i> ${t["Bill Calculation Results"]}`;
-    document.querySelectorAll('.result-label')[0].textContent = t["Total Cost:"];
-    document.querySelectorAll('.result-label')[1].textContent = t["Average Cost per Unit:"];
-    document.querySelectorAll('.result-label')[2].textContent = t["Daily Consumption:"];
-    document.querySelectorAll('.result-label')[3].textContent = t["Daily Cost:"];
-    document.querySelector('.breakdown h3').innerHTML = `<i class="fas fa-receipt"></i> ${t["Cost Breakdown"]}`;
-    document.querySelectorAll('.breakdown-item span')[0].textContent = t["Energy Cost:"];
-    document.querySelectorAll('.breakdown-item span')[2].textContent = t["Rebate"] + " (<span id='rebatePercent'>" + document.getElementById('rebatePercent').textContent + "</span>%):";
-    document.querySelectorAll('.breakdown-item span')[4].textContent = t["Meter Rent:"];
-    document.querySelectorAll('.breakdown-item span')[6].textContent = t["Demand Charge:"];
-    document.querySelector('.history-section h3').innerHTML = `<i class="fas fa-history"></i> ${t["Recent Calculations"]}`;
-    document.querySelector('.clear-history-btn').innerHTML = `<i class="fas fa-trash"></i> ${t["Clear History"]}`;
-    if (!loadHistory().length) document.querySelector('.history-empty').textContent = t["No calculation history yet"];
-    document.querySelector('.btn-group button:nth-child(1)').innerHTML = `<i class="fas fa-download"></i> ${t["PDF"]}`;
-    document.querySelector('.btn-group button:nth-child(2)').innerHTML = `<i class="fas fa-print"></i> ${t["Print"]}`;
-    document.getElementById('toggleSlabEditor').innerHTML = `<i class="fas fa-edit"></i> ${t["Edit Slabs"]}`;
-    document.querySelector('.btn-danger').innerHTML = `<i class="fas fa-undo"></i> ${t["Reset"]}`;
-    document.querySelector('.slab-editor h3').innerHTML = `<i class="fas fa-edit"></i> ${t["Edit Tariff Slabs"]}`;
-    document.querySelector('.add-slab-btn').innerHTML = `<i class="fas fa-plus"></i> ${t["Add Slab"]}`;
-    document.querySelector('.slab-table th:nth-child(1)').textContent = t["Step"];
-    document.querySelector('.slab-table th:nth-child(2)').textContent = t["Consumption Range (kWh)"];
-    document.querySelector('.slab-table th:nth-child(3)').textContent = t["Rate (Tk/kWh)"];
-    document.querySelector('footer').innerHTML = `<i class="fas fa-exclamation-circle"></i> © 2024 BPDB LT-A Electricity Calculator | ${t["For official use only"]}`;
-}
-document.getElementById('languageToggle').onclick = function(e) {
-    if (e.target.dataset.lang) setLanguage(e.target.dataset.lang);
-};
 
+    localStorage.setItem('preferred_language', lang);
+    document.documentElement.lang = lang;
+    const t = translations[lang];
+
+    // Update all elements with data-translate
+    document.querySelectorAll('[data-translate]').forEach(element => {
+        let key = element.getAttribute('data-translate');
+        if (t[key]) {
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                if (element.hasAttribute('placeholder')) {
+                    element.placeholder = t[key];
+                }
+            } else {
+                element.innerHTML = t[key];
+            }
+        }
+    });
+
+    // Special for some elements with innerHTML and variables (breakdown VAT/Rebate)
+    document.querySelectorAll('.breakdown-item')[1].querySelector('span').innerHTML = t["VAT"] + ' (<span id="vatPercent">' + document.getElementById('vatPercent').textContent + '</span>%):';
+    document.querySelectorAll('.breakdown-item')[2].querySelector('span').innerHTML = t["Rebate"] + ' (<span id="rebatePercent">' + document.getElementById('rebatePercent').textContent + '</span>%):';
+
+    // Table headers
+    const ths = document.querySelectorAll('.slab-table th');
+    if (ths.length >= 3) {
+        ths[0].textContent = t["Step"];
+        ths[1].textContent = t["Consumption Range (kWh)"];
+        ths[2].textContent = t["Rate (Tk/kWh)"];
+    }
+
+    // Footer
+    document.getElementById("footerYear").textContent = new Date().getFullYear();
+
+    // BPDB Links
+    document.getElementById("bpdbTokenLink").textContent = t["BPDB Last 3 Tokens"];
+    document.getElementById("bpdbShortCodeLink").textContent = t["BPDB Meter Short Code"];
+    document.getElementById("bpdbEnergyCalcLink").textContent = t["Prepaid Meter Energy Charge Calculator"];
+}
+
+// Language toggle events
+document.addEventListener('DOMContentLoaded', () => {
+    const storedLang = localStorage.getItem('preferred_language') || 'en';
+    setLanguage(storedLang);
+    document.getElementById('languageToggle').addEventListener('click', (e) => {
+        if (e.target.dataset.lang) setLanguage(e.target.dataset.lang);
+    });
+    document.querySelectorAll('.language-toggle span').forEach(span => {
+        span.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && span.dataset.lang) setLanguage(span.dataset.lang);
+        });
+    });
+});
+
+/* ----------- [Original Calculator JavaScript Code] ----------- */
+/* ...[Paste your original JavaScript logic for slabs, history, PDF, etc. below this comment. No translation logic here, keep as in your original code]... */
+let slabs = [
+    { min: 0, max: 50, rate: 4.63 },
+    { min: 51, max: 75, rate: 5.26 },
+    { min: 76, max: 200, rate: 7.20 },
+    { min: 201, max: 300, rate: 7.59 },
+    { min: 301, max: 400, rate: 8.02 },
+    { min: 401, max: 600, rate: 12.67 },
+    { min: 601, max: Infinity, rate: 14.61 }
+];
+// LocalStorage
+function saveSettings() { try { localStorage.setItem('bpdb_slabs', JSON.stringify(slabs)); } catch (e) {} }
+function loadSettings() { try { const slabData = localStorage.getItem('bpdb_slabs'); if (slabData) slabs = JSON.parse(slabData); } catch (e) {} }
+function saveHistory(history) { try { localStorage.setItem('bpdb_history', JSON.stringify(history)); } catch (e) {} }
+function loadHistory() { try { return JSON.parse(localStorage.getItem('bpdb_history') || '[]'); } catch (e) { return []; } }
+// Slab Table Rendering
+function renderSlabTable() {
+    const tbody = document.getElementById('slabTableBody');
+    tbody.innerHTML = '';
+    slabs.forEach((slab, idx) => {
+        const maxShow = slab.max === Infinity ? '∞' : slab.max;
+        tbody.innerHTML += `<tr>
+            <td>${idx + 1}</td>
+            <td>${slab.min} - ${maxShow}</td>
+            <td class="slab-rate">${slab.rate.toFixed(2)}</td>
+        </tr>`;
+    });
+}
+function renderSlabEditor() {
+    const container = document.getElementById('slabEditContainer');
+    container.innerHTML = '';
+    slabs.forEach((slab, idx) => {
+        container.innerHTML += `
+            <div class="slab-edit-row">
+                <input type="number" min="0" value="${slab.min}" onchange="updateSlab(${idx}, 'min', this.value)">
+                <input type="number" min="0" value="${slab.max === Infinity ? '' : slab.max}" placeholder="Max" onchange="updateSlab(${idx}, 'max', this.value)">
+                <input type="number" min="0" step="0.01" value="${slab.rate}" onchange="updateSlab(${idx}, 'rate', this.value)">
+                <button class="remove-slab" onclick="removeSlab(${idx})"><i class="fas fa-trash"></i></button>
+            </div>
+        `;
+    });
+}
+function updateSlab(idx, field, value) {
+    if (field === 'min') slabs[idx].min = parseInt(value) || 0;
+    if (field === 'max') slabs[idx].max = value === '' ? Infinity : parseInt(value);
+    if (field === 'rate') slabs[idx].rate = parseFloat(value) || 0;
+    saveSettings();
+    renderSlabTable();
+    renderSlabEditor();
+}
+function removeSlab(idx) {
+    if (slabs.length === 1) { alert(translations[getCurrentLang()]["You must have at least one slab!"]); return; }
+    slabs.splice(idx, 1);
+    saveSettings();
+    renderSlabTable();
+    renderSlabEditor();
+}
+function addSlabRow() {
+    let last = slabs[slabs.length - 1];
+    slabs.push({ min: (last.max === Infinity ? last.min + 1 : last.max + 1), max: Infinity, rate: last.rate });
+    if (last.max === Infinity) last.max = last.min + 99;
+    saveSettings();
+    renderSlabTable();
+    renderSlabEditor();
+}
+function resetSlabs() {
+    if (!confirm(translations[getCurrentLang()]["Reset to default slabs?"])) return;
+    slabs = [
+        { min: 0, max: 50, rate: 4.63 },
+        { min: 51, max: 75, rate: 5.26 },
+        { min: 76, max: 200, rate: 7.20 },
+        { min: 201, max: 300, rate: 7.59 },
+        { min: 301, max: 400, rate: 8.02 },
+        { min: 401, max: 600, rate: 12.67 },
+        { min: 601, max: Infinity, rate: 14.61 }
+    ];
+    saveSettings();
+    renderSlabTable();
+    renderSlabEditor();
+}
+function calculateCost() {
+    checkInputsForWarnings();
+    const units = parseFloat(document.getElementById('units').value);
+    const days = parseInt(document.getElementById('days').value);
+    if (isNaN(units) || units < 0) { alert(translations[getCurrentLang()]["Please enter valid units (numbers only)!"]); return; }
+    if (isNaN(days) || days < 1) { alert(translations[getCurrentLang()]["Please enter a valid number of days (minimum 1 day)!"]); return; }
+    let remaining = units, energyCost = 0;
+    for (let slab of slabs) {
+        let slabMax = slab.max === Infinity ? units : slab.max;
+        let slabMin = slab.min;
+        let slabUnits = Math.max(0, Math.min(remaining, slabMax - slabMin + 1));
+        if (slabUnits > 0) {
+            let cost = slabUnits * slab.rate;
+            energyCost += cost;
+            remaining -= slabUnits;
+        }
+        if (remaining <= 0) break;
+    }
+    let vatChecked = document.getElementById('includeVAT').checked;
+    let rebateChecked = document.getElementById('includeRebate').checked;
+    let meterRentChecked = document.getElementById('includeMeterRent').checked;
+    let demandChargeChecked = document.getElementById('includeDemandCharge').checked;
+    let vatValue = parseFloat(document.getElementById('vatValue').value) || 0;
+    let rebateValue = parseFloat(document.getElementById('rebateValue').value) || 0;
+    let meterRent = meterRentChecked ? (parseFloat(document.getElementById('meterRentValue').value) || 0) : 0;
+    let demandCharge = demandChargeChecked ? (parseFloat(document.getElementById('demandChargeValue').value) || 0) : 0;
+    let vat = vatChecked ? energyCost * vatValue / 100 : 0;
+    let rebate = rebateChecked ? energyCost * rebateValue / 100 : 0;
+    let total = energyCost + vat - rebate + meterRent + demandCharge;
+    let avgPerUnit = total / units;
+    let kwhPerDay = units / days;
+    let costPerDay = total / days;
+    document.getElementById('energyCost').textContent = 'Tk ' + energyCost.toFixed(2);
+    document.getElementById('vatAmount').textContent = 'Tk ' + vat.toFixed(2);
+    document.getElementById('rebateAmount').textContent = 'Tk -' + rebate.toFixed(2);
+    document.getElementById('meterRentAmount').textContent = 'Tk ' + meterRent.toFixed(2);
+    document.getElementById('demandChargeAmount').textContent = 'Tk ' + demandCharge.toFixed(2);
+    document.getElementById('totalCost').textContent = 'Tk ' + total.toFixed(2);
+    document.getElementById('avgPerUnit').textContent = 'Tk ' + avgPerUnit.toFixed(2);
+    document.getElementById('kwhPerDay').textContent = kwhPerDay.toFixed(2) + ' kWh';
+    document.getElementById('costPerDay').textContent = 'Tk ' + costPerDay.toFixed(2);
+    document.getElementById('results').classList.add('active');
+    document.getElementById('vatPercent').textContent = vatValue;
+    document.getElementById('rebatePercent').textContent = rebateValue;
+    let history = loadHistory();
+    history.unshift({
+        units, days, total: total.toFixed(2),
+        date: new Date().toLocaleString()
+    });
+    if (history.length > 20) history.pop();
+    saveHistory(history);
+    renderHistory();
+}
+function checkInputsForWarnings() {
+    const units = parseFloat(document.getElementById('units').value);
+    const unitsWarning = document.getElementById('units-warning');
+    if (units > 5000) {
+        unitsWarning.style.display = "block";
+        unitsWarning.textContent = "Are you sure you used " + units + " units this month? That is unusually high for a residence.";
+    } else {
+        unitsWarning.style.display = "none";
+        unitsWarning.textContent = "";
+    }
+    const days = parseInt(document.getElementById('days').value);
+    const daysWarning = document.getElementById('days-warning');
+    if (days > 31) {
+        daysWarning.style.display = "block";
+        daysWarning.textContent = "Billing period exceeds 31 days. Please check if this is correct.";
+    } else {
+        daysWarning.style.display = "none";
+        daysWarning.textContent = "";
+    }
+}
+document.getElementById('units').addEventListener('input', checkInputsForWarnings);
+document.getElementById('days').addEventListener('input', checkInputsForWarnings);
+// History
+function renderHistory() {
+    let history = loadHistory();
+    let list = document.getElementById('historyList');
+    if (!history.length) {
+        list.innerHTML = '<li class="history-empty" data-translate="No calculation history yet">' + translations[getCurrentLang()]["No calculation history yet"] + '</li>';
+        return;
+    }
+    list.innerHTML = '';
+    history.forEach(item => {
+        list.innerHTML += `<li>
+            <span class="history-units">${item.units} kWh</span>
+            <span class="history-cost">Tk ${item.total}</span>
+            <span class="history-date">${item.date}</span>
+        </li>`;
+    });
+}
+function clearHistory() {
+    if (!confirm(translations[getCurrentLang()]["Clear all calculation history?"])) return;
+    saveHistory([]);
+    renderHistory();
+}
+// PDF/Print
+function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    html2canvas(document.querySelector('.results')).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+        pdf.addImage(imgData, 'PNG', 5, 5, 200, 0);
+        pdf.save('bpdb_bill.pdf');
+    });
+}
+function downloadImage() {
+    const resultsDiv = document.getElementById('results');
+    if (!resultsDiv.classList.contains('active')) {
+        alert('Please calculate your bill first!');
+        return;
+    }
+    html2canvas(resultsDiv).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'bpdb_bill.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+}
+// Social Sharing
+function shareOnFacebook() { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(location.href), '_blank'); }
+function shareOnTwitter() { window.open('https://twitter.com/intent/tweet?url=' + encodeURIComponent(location.href), '_blank'); }
+function shareOnWhatsApp() { window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(location.href), '_blank'); }
+function shareViaEmail() { window.location = `mailto:?subject=BPDB LT-A Electricity Bill Calculator&body=Try this tool: ${location.href}`; }
+// Slab Editor Toggle
+document.getElementById('toggleSlabEditor').onclick = function() {
+    document.getElementById('slabEditor').classList.toggle('active');
+};
+// Helper to get current language
+function getCurrentLang() {
+    return localStorage.getItem('preferred_language') || 'en';
+}
 // On load
 window.onload = function() {
     loadSettings();
     renderSlabTable();
     renderSlabEditor();
     renderHistory();
+    document.getElementById('footerYear').textContent = new Date().getFullYear();
+    setLanguage(getCurrentLang());
 };
+// Social btn keyboard support
+document.querySelectorAll('.social-btn').forEach(btn => {
+    btn.setAttribute('tabindex', '0');
+    btn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') btn.click();
+    });
+});
 </script>
 </body>
 </html>
